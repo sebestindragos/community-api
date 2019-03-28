@@ -1,0 +1,25 @@
+{
+  "config": "debug",
+  "host": "0.0.0.0",
+  "port": 8080,
+  "hostname": "http://localhost:8080/",
+  "console": {
+    "#stdout": "/path/to/service.log",
+    "#stderr": "/path/to/service.error"
+  },
+
+  "accesslog": {
+    "format": "dev",
+    "#file": "/path/to/service.access"
+  },
+
+  "db": {
+    "url": "mongodb://localhost:27017",
+    "name": "community"
+  },
+
+  "engine": {
+    "version": "1.0.0"
+  }
+
+}
