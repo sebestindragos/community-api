@@ -14,6 +14,20 @@
       "outFiles": [
         "${workspaceFolder}/build/**/*.js"
       ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Toy - user auth",
+      "program": "${workspaceFolder}/src/toys/user-auth/server.ts",
+      "console": "integratedTerminal",
+      "sourceMaps": true,
+      "outFiles": [
+        "${workspaceFolder}/build/toys/user-auth/**/*.js"
+      ],
+      "args": [
+        "port", "8082"
+      ]
     }
   ]
 }
