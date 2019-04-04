@@ -128,4 +128,20 @@ export class UserService implements IService {
 
     return jwt;
   }
+
+  async getUserById (id: ObjectID) : Promise<IUser> {
+    let user = await this._usersRepo.findOne({
+      _id: id
+    });
+
+    if (!user) {
+      throw EXCEPTIONAL.NotFoundException(0, {
+        message: 'No user with this id in the database'
+      });
+    }
+
+    delete user.password;
+
+    return user;
+  }
 }

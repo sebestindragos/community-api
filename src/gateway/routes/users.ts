@@ -75,5 +75,24 @@ export function get (
     }
   });
 
+  router.get('/users/me', sanitize(new Schema({
+    email: Schema.Types.String,
+    password: Schema.Types.String
+  })), async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      req;
+      let user = await users.getUserById(new ObjectID());
+      res.json({
+        user
+      });
+    } catch (err) {
+      next(err);
+    }
+  });
+
   return router;
 }
