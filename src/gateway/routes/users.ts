@@ -54,5 +54,26 @@ export function get (
     }
   });
 
+  router.post('/users/login', sanitize(new Schema({
+    email: Schema.Types.String,
+    password: Schema.Types.String
+  })), async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      let jwt = await users.login({
+        email: req.body.email,
+        password: req.body.password
+      });
+      res.json({
+        accessToken: jwt
+      });
+    } catch (err) {
+      next(err);
+    }
+  });
+
   return router;
 }

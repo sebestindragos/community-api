@@ -117,4 +117,14 @@ export class UserService implements IService {
       }
     });
   }
+
+  async login (params: {
+    email: string,
+    password: string
+  }) : Promise<string> {
+    params;
+    let jwt = '';
+
+    return jwt;
+  }
 }
