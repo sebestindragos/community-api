@@ -25,6 +25,7 @@ export class UserService implements IService {
   constructor (
     private _mailer: Mailer,
     private _hostname: string,
+    private _jwtSecret: string,
     private _usersRepo: Collection<IUser>,
     private _randomCodesRepo: Collection<IRandomCode>,
   ) { }
@@ -123,7 +124,7 @@ export class UserService implements IService {
     password: string
   }) : Promise<string> {
     params;
-    let jwt = '';
+    let jwt = this._jwtSecret;
 
     return jwt;
   }

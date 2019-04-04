@@ -20,6 +20,9 @@
 
   "engine": {
     "version": "1.0.0"
-  }
+  },
 
+  "users": {
+    "jwtSecret": "super-secret-string"
+  }
 }
