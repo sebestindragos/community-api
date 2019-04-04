@@ -1,9 +1,9 @@
 import * as express from 'express';
-// import {ObjectID} from 'mongodb';
+import {ObjectID} from 'mongodb';
 import {Schema} from 'inpt.js';
 
 // import {isAuthorized} from '../middleware/authorization';
-import {sanitize} from '../middleware/sanitize';
+import {sanitize, sanitizeQ} from '../middleware/sanitize';
 import {ServiceRegistry} from '../../application/serviceRegistry';
 import {USER_SERVICE_COMPONENT, UserService} from '../../domain/users/service';
 
@@ -14,23 +14,40 @@ export function get (
 
   let users = registry.get(USER_SERVICE_COMPONENT) as UserService;
 
-  router.post('/user/register', sanitize(new Schema({
-    grantType: Schema.Types.String,
-    clientId: Schema.Types.String,
-    clientSecret: Schema.Types.Optional(Schema.Types.String),
-    state: Schema.Types.String,
-
-    accountKitCode: Schema.Types.String,
+  router.post('/users/register', sanitize(new Schema({
+    email: Schema.Types.String,
+    password: Schema.Types.String,
     firstname: Schema.Types.String,
-    lastname: Schema.Types.Optional(Schema.Types.String)
+    lastname: Schema.Types.String
   })), async (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction
   ) => {
     try {
-      req; users;
-      // todo - add code
+      await users.registerAccount({
+        email: req.body.email,
+        password: req.body.password,
+        firstname: req.body.firstname,
+        lastname: req.body.lastname
+      });
+      res.end();
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  router.get('/users/confirm', sanitizeQ(new Schema({
+    code: Schema.Types.String
+  })), async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      await users.confirmAccount(
+        new ObjectID(req.query.code)
+      );
       res.end();
     } catch (err) {
       next(err);

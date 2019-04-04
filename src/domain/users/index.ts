@@ -1,13 +1,15 @@
 import {Db} from 'mongodb';
 
 import {UserService} from './service';
+import { Mailer } from '../mailer';
 
 export function get (
-  usersDb: Db,
+  usersDb: Db, mailer: Mailer, hostname: string
 ) : UserService {
 
   // fetch collections
   let usersCollection = usersDb.collection('users');
+  let randomCodesCollection = usersDb.collection('random-codes');
 
   // create indexes
   usersCollection.createIndex({
@@ -15,7 +17,7 @@ export function get (
   }, {unique: true});
 
   let service = new UserService(
-    usersCollection
+    mailer, hostname, usersCollection, randomCodesCollection
   );
 
   return service;

@@ -1,5 +1,5 @@
 import {MongoClient, Db} from 'mongodb';
-import {setLocale} from 'exceptional.js';
+import {setLocale, registerTable} from 'exceptional.js';
 import * as nconf from 'nconf';
 
 // plumbing
@@ -11,6 +11,7 @@ import {get as UserServiceFactory} from './domain/users';
 
 // gateway
 import {get as ApiGatewayFactory, ApiGateway} from './gateway';
+import { Mailer } from './domain/mailer';
 
 /**
  * Class representing the application object.
@@ -19,6 +20,7 @@ import {get as ApiGatewayFactory, ApiGateway} from './gateway';
  */
 export class CommunityAPI {
   private _mongoClient: MongoClient | undefined;
+  private _mailer: Mailer;
 
   public serviceRegistry = new ServiceRegistry(); // make it public for import usage
   public apiGateway: ApiGateway | undefined;
@@ -28,8 +30,16 @@ export class CommunityAPI {
    */
   constructor () {
     // initialize error subsystem
+    registerTable({
+      errors: {
+        0: '${message}'
+      },
+      locale: 'en',
+      namespace: 'default'
+    });
+    setLocale('en');
 
-    setLocale('ro');
+    this._mailer = new Mailer();
   }
 
   /**
@@ -66,7 +76,7 @@ export class CommunityAPI {
    * Initialize the user service.
    */
   private async _initUsers (db: Db) {
-    let userService = UserServiceFactory(db);
+    let userService = UserServiceFactory(db, this._mailer, nconf.get('hostname'));
     this.serviceRegistry.add(userService);
   }
 
