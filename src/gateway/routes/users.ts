@@ -2,13 +2,14 @@ import * as express from 'express';
 import {ObjectID} from 'mongodb';
 import {Schema} from 'inpt.js';
 
-// import {isAuthorized} from '../middleware/authorization';
+import {isAuthorized} from '../middleware/authorization';
 import {sanitize, sanitizeQ} from '../middleware/sanitize';
 import {ServiceRegistry} from '../../application/serviceRegistry';
 import {USER_SERVICE_COMPONENT, UserService} from '../../domain/users/service';
 
 export function get (
-  registry: ServiceRegistry
+  registry: ServiceRegistry,
+  jwtSecret: string
 ) : express.Router {
   let router = express.Router();
 
@@ -75,7 +76,7 @@ export function get (
     }
   });
 
-  router.get('/users/me', sanitize(new Schema({
+  router.get('/users/me', isAuthorized(jwtSecret), sanitize(new Schema({
     email: Schema.Types.String,
     password: Schema.Types.String
   })), async (
@@ -84,8 +85,8 @@ export function get (
     next: express.NextFunction
   ) => {
     try {
-      req;
-      let user = await users.getUserById(new ObjectID());
+      let userId = (req as any).user._id;
+      let user = await users.getUserById(userId);
       res.json({
         user
       });

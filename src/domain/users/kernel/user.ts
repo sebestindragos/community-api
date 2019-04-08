@@ -60,4 +60,11 @@ export class User implements IUser {
   activate () {
     this.active = true;
   }
+
+  /**
+   * Check if password matches the saved one.
+   */
+  checkPassword (password: string) : boolean {
+    return bcrypt.compareSync(password, this.password);
+  }
 }

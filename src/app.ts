@@ -88,7 +88,8 @@ export class CommunityAPI {
   private async _initGateway () {
     this.apiGateway = ApiGatewayFactory(
       nconf.get('engine:version'),
-      this.serviceRegistry
+      this.serviceRegistry,
+      nconf.get('users:jwtSecret')
     );
   }
 }

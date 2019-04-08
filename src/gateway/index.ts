@@ -5,10 +5,11 @@ import {ServiceRegistry} from '../application/serviceRegistry';
 
 export function get (
   apiVersion: string,
-  registry: ServiceRegistry
+  registry: ServiceRegistry,
+  jwtSecret: string
 ): ApiGateway {
   let gateway = new ApiGateway(
-    apiVersion, registry
+    apiVersion, registry, jwtSecret
   );
 
   return gateway;

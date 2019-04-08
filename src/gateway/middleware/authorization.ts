@@ -4,7 +4,7 @@ import {context} from 'exceptional.js';
 
 import { ObjectID } from 'bson';
 
-const EXCEPTIONAL = context('users');
+const EXCEPTIONAL = context('default');
 
 /**
  * Middleware used to check if a user is authorized to access a route (via JWT).
@@ -20,7 +20,7 @@ export function isAuthorized (secret: string) {
     if (typeof authorizationHeader === 'string') {
       let token = authorizationHeader as string;
       if (!token) {
-        return next(EXCEPTIONAL.UnauthorizedException(4, {}));
+        return next(EXCEPTIONAL.UnauthorizedException(0, {}));
       }
 
       token = token.substr('Bearer '.length);
@@ -31,7 +31,7 @@ export function isAuthorized (secret: string) {
 
       jwt.verify(token, secret, (err, decodedToken) => {
         if (err) {
-          return next(EXCEPTIONAL.UnauthorizedException(4, {}));
+          return next(EXCEPTIONAL.UnauthorizedException(0, {}));
         } else {
           Object.defineProperty(req, 'user', {
             value: {
@@ -42,7 +42,7 @@ export function isAuthorized (secret: string) {
         }
       });
     } else {
-      return next(EXCEPTIONAL.UnauthorizedException(4, {}));
+      return next(EXCEPTIONAL.UnauthorizedException(0, {}));
     }
   };
 }

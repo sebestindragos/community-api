@@ -26,7 +26,8 @@ export class ApiGateway {
    */
   constructor (
     private _apiVersion: string,
-    public registry: ServiceRegistry
+    public registry: ServiceRegistry,
+    jwtSecret: string
   ) {
     this.router = express.Router();
 
@@ -35,7 +36,7 @@ export class ApiGateway {
 
     // load api routes
     let apiRouter = express.Router();
-    apiRouter.use(UserRoutes(registry));
+    apiRouter.use(UserRoutes(registry, jwtSecret));
 
     this.router.use(`/api/${apiVersion}`, apiRouter);
 

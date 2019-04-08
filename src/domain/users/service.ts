@@ -1,5 +1,6 @@
 import {Collection, ObjectID} from 'mongodb';
 import {context} from 'exceptional.js';
+import * as jwt from 'jsonwebtoken';
 
 import {IService} from '../../application/IService';
 import { IUser } from './kernel/IUser';
@@ -123,10 +124,28 @@ export class UserService implements IService {
     email: string,
     password: string
   }) : Promise<string> {
-    params;
-    let jwt = this._jwtSecret;
+    // check if email is already used
+    let found = await this._usersRepo.findOne({
+      email: params.email
+    });
+    if (!found) {
+      throw EXCEPTIONAL.NotFoundException(0, {
+        message: 'No user registered with this email address.'
+      });
+    }
+    let user = new User(found);
+    let passwordMatches = user.checkPassword(params.password);
+    if (!passwordMatches) {
+      throw EXCEPTIONAL.DomainException(0, {
+        message: 'Wrong password.'
+      });
+    }
 
-    return jwt;
+    return jwt.sign({
+      _id: user._id
+    }, this._jwtSecret, {
+      expiresIn: 30 * 24 * 60 * 60
+    });
   }
 
   async getUserById (id: ObjectID) : Promise<IUser> {
