@@ -86,7 +86,7 @@ export class UserService implements IService {
   /**
    * confirm a previously created account.
    */
-  async confirmAccount (randomCodeId: ObjectID) {
+  async confirmAccount (randomCodeId: ObjectID) : Promise<IUser> {
     // find confirmation code
     let foundCode = await this._randomCodesRepo.findOne({
       _id: randomCodeId
@@ -118,6 +118,8 @@ export class UserService implements IService {
         active: user.active
       }
     });
+
+    return user;
   }
 
   async login (params: {

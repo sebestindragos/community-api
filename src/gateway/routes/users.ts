@@ -6,6 +6,7 @@ import {isAuthorized} from '../middleware/authorization';
 import {sanitize, sanitizeQ} from '../middleware/sanitize';
 import {ServiceRegistry} from '../../application/serviceRegistry';
 import {USER_SERVICE_COMPONENT, UserService} from '../../domain/users/service';
+import {NOTIFICATIONS_SERVICE_COMPONENT, NotificationService} from '../../domain/notifications/service';
 
 export function get (
   registry: ServiceRegistry,
@@ -14,6 +15,7 @@ export function get (
   let router = express.Router();
 
   let users = registry.get(USER_SERVICE_COMPONENT) as UserService;
+  let notifications = registry.get(NOTIFICATIONS_SERVICE_COMPONENT) as NotificationService;
 
   router.post('/users/register', sanitize(new Schema({
     email: Schema.Types.String,
@@ -46,8 +48,13 @@ export function get (
     next: express.NextFunction
   ) => {
     try {
-      await users.confirmAccount(
+      let confirmedAccount = await users.confirmAccount(
         new ObjectID(req.query.code)
+      );
+
+      await notifications.createGenericNotification(
+        confirmedAccount._id,
+        'Your account has been confirmed. Welcome to Community!'
       );
       res.end();
     } catch (err) {

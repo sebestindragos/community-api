@@ -8,6 +8,7 @@ import {Logger} from './util/process/logger';
 // services
 import {ServiceRegistry} from './application/serviceRegistry';
 import {get as UserServiceFactory} from './domain/users';
+import {get as NotificationServiceFactory} from './domain/notifications';
 
 // gateway
 import {get as ApiGatewayFactory, ApiGateway} from './gateway';
@@ -54,7 +55,9 @@ export class CommunityAPI {
     );
 
     // init services
-    await this._initUsers(this._mongoClient.db(nconf.get('db:name')));
+    let dbName = this._mongoClient.db(nconf.get('db:name'));
+    await this._initUsers(dbName);
+    await this._initNotifications(dbName);
 
     // init api gateway
     await this._initGateway();
@@ -78,6 +81,16 @@ export class CommunityAPI {
   private async _initUsers (db: Db) {
     let userService = UserServiceFactory(
       db, this._mailer, nconf.get('hostname'), nconf.get('users:jwtSecret')
+    );
+    this.serviceRegistry.add(userService);
+  }
+
+  /**
+   * Initialize the notifications service.
+   */
+  private async _initNotifications (db: Db) {
+    let userService = NotificationServiceFactory(
+      db
     );
     this.serviceRegistry.add(userService);
   }
