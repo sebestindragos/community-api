@@ -2,7 +2,7 @@
   "rules": {
     "adjacent-overload-signatures": true,
     "ban-comma-operator": true,
-    "no-console": [true, "log", "error"],
+    // "no-console": [true, "log", "error"],
     "no-invalid-this": true,
     "no-use-before-declare": true,
     "triple-equals": true,

@@ -1,5 +1,6 @@
 import {Collection, ObjectID} from 'mongodb';
 import {context} from 'exceptional.js';
+import * as SocketIO from 'socket.io';
 
 import {IService} from '../../application/IService';
 import { INotification, NotificationType, IGenericDataType } from './kernel/INotification';
@@ -20,8 +21,25 @@ export class NotificationService implements IService {
    * Class constructor.
    */
   constructor (
-    private _notificationsRepo: Collection<INotification<any>>
-  ) { }
+    private _notificationsRepo: Collection<INotification<any>>,
+    private _socketIO: SocketIO.Server
+  ) {
+    this._socketIO.on('connection', () => {
+      console.log('an user connected');
+    });
+
+    setInterval(() => {
+      let notification = Notification.create<IGenericDataType>({
+        forUserId: new ObjectID(),
+        type: NotificationType.generic,
+        data: {
+          message: 'test notification'
+        }
+      });
+
+      this.sendNotification(notification);
+    }, 10000);
+  }
 
   /**
    * IService interface methods.
@@ -86,5 +104,9 @@ export class NotificationService implements IService {
         seen: notification.seen
       }
     });
+  }
+
+  sendNotification (notification: INotification<any>) {
+    this._socketIO.emit('notification', JSON.stringify(notification));
   }
 }

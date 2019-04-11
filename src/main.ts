@@ -7,6 +7,7 @@ import * as moment from 'moment';
 import * as compression from 'compression';
 import * as helmet from 'helmet';
 import * as cors from 'cors';
+import * as socketIO from 'socket.io';
 
 import {ProcessManager} from './util/process/manager';
 import {Logger} from './util/process/logger';
@@ -46,8 +47,9 @@ async function bootstrap () {
 
   app = express();
   server = http.createServer(app);
+  const io = socketIO(server);
 
-  communityApi = new CommunityAPI();
+  communityApi = new CommunityAPI(io);
   await communityApi.start();
 
   // to be used only with a frontend (nginx or any load balancer)

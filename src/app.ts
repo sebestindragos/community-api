@@ -1,6 +1,7 @@
 import {MongoClient, Db} from 'mongodb';
 import {setLocale, registerTable} from 'exceptional.js';
 import * as nconf from 'nconf';
+import * as socketIO from 'socket.io';
 
 // plumbing
 import {Logger} from './util/process/logger';
@@ -29,7 +30,7 @@ export class CommunityAPI {
   /**
    * Class constructor.
    */
-  constructor () {
+  constructor (private _io: socketIO.Server) {
     // initialize error subsystem
     registerTable({
       errors: {
@@ -57,7 +58,7 @@ export class CommunityAPI {
     // init services
     let dbName = this._mongoClient.db(nconf.get('db:name'));
     await this._initUsers(dbName);
-    await this._initNotifications(dbName);
+    await this._initNotifications(dbName, this._io);
 
     // init api gateway
     await this._initGateway();
@@ -88,9 +89,9 @@ export class CommunityAPI {
   /**
    * Initialize the notifications service.
    */
-  private async _initNotifications (db: Db) {
+  private async _initNotifications (db: Db, io: socketIO.Server) {
     let userService = NotificationServiceFactory(
-      db
+      db, io
     );
     this.serviceRegistry.add(userService);
   }
