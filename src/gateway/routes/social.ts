@@ -6,6 +6,7 @@ import {isAuthorized} from '../middleware/authorization';
 import {sanitize} from '../middleware/sanitize';
 import {ServiceRegistry} from '../../application/serviceRegistry';
 import {SOCIAL_SERVICE_COMPONENT, SocialService} from '../../domain/social/service';
+import {NOTIFICATIONS_SERVICE_COMPONENT, NotificationService} from '../../domain/notifications/service';
 
 export function get (
   registry: ServiceRegistry,
@@ -14,6 +15,7 @@ export function get (
   let router = express.Router();
 
   let social = registry.get(SOCIAL_SERVICE_COMPONENT) as SocialService;
+  let notifications = registry.get(NOTIFICATIONS_SERVICE_COMPONENT) as NotificationService;
 
   router.post('/social/friend-request', isAuthorized(jwtSecret), sanitize(new Schema({
     friendId: Schema.Types.String
@@ -24,10 +26,16 @@ export function get (
   ) => {
     try {
       let userId = (req as any).user._id;
-      await social.createFriendRequest({
+      let request = await social.createFriendRequest({
         fromUserId: userId,
         toUserId: new ObjectID(req.body.friendId)
       });
+
+      let notification = await notifications.createFriendRequestNotification(
+        request.toId, {fromUserId: request.fromId}
+      );
+      await notifications.sendNotification(notification);
+
       res.end();
     } catch (err) {
       next(err);
@@ -43,9 +51,18 @@ export function get (
   ) => {
     try {
       // let userId = (req as any).user._id;
-      await social.respondToFriendRequest(
-        new ObjectID(req.params.id), req.body.status
+      let friendRequestId = new ObjectID(req.params.id);
+      let accepted = await social.respondToFriendRequest(
+        friendRequestId, req.body.status
       );
+
+      // send response notification to requesting user
+      let friendRequest = await social.getFriendRequest(friendRequestId);
+      let notification = await notifications.createFriendRequestResponseNotification(
+        friendRequest.fromId, {accepted}
+      );
+      await notifications.sendNotification(notification);
+
       res.end();
     } catch (err) {
       next(err);

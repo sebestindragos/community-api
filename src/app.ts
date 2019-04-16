@@ -93,7 +93,7 @@ export class CommunityAPI {
    */
   private async _initNotifications (db: Db, io: socketIO.Server) {
     let service = NotificationServiceFactory(
-      db, io
+      db, io, nconf.get('users:jwtSecret')
     );
     this.serviceRegistry.add(service);
   }

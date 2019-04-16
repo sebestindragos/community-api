@@ -61,7 +61,7 @@ export class SocialService implements IService {
   /**
    * Respond to a friend request.
    */
-  async respondToFriendRequest(id: ObjectID, status: FriendRequestStatus) {
+  async respondToFriendRequest(id: ObjectID, status: FriendRequestStatus) : Promise<boolean> {
     // find request and make sure it's status is pending
     let friendRequest = await this._friendRequestsRepo.findOne({
       _id: id, status: FriendRequestStatus.pending
@@ -105,6 +105,22 @@ export class SocialService implements IService {
         status: friendRequest.status
       }
     });
+
+    return friendRequest.status === FriendRequestStatus.accepted;
+  }
+
+  /**
+   * Get a friend request by id.
+   */
+  async getFriendRequest (id: ObjectID) : Promise<IFriendRequest> {
+    let found = await this._friendRequestsRepo.findOne({_id: id});
+    if (!found) {
+      throw EXCEPTIONAL.NotFoundException(0, {
+        message: 'Could not find friend request'
+      });
+    }
+
+    return found;
   }
 
   /**

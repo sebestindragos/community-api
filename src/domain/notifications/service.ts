@@ -1,9 +1,16 @@
 import {Collection, ObjectID} from 'mongodb';
 import {context} from 'exceptional.js';
 import * as SocketIO from 'socket.io';
+import * as jwt from 'jsonwebtoken';
 
 import {IService} from '../../application/IService';
-import { INotification, NotificationType, IGenericDataType } from './kernel/INotification';
+import {
+  INotification,
+  NotificationType,
+  IGenericDataType,
+  IFriendRequestDataType,
+  IFriendRequestResponseDataType
+} from './kernel/INotification';
 import { Notification } from './kernel/notification';
 
 export const NOTIFICATIONS_SERVICE_COMPONENT = 'community:notifications';
@@ -22,23 +29,21 @@ export class NotificationService implements IService {
    */
   constructor (
     private _notificationsRepo: Collection<INotification<any>>,
-    private _socketIO: SocketIO.Server
+    private _socketIO: SocketIO.Server,
+    private _jwtSecret: string
   ) {
-    this._socketIO.on('connection', () => {
-      console.log('an user connected');
+    this._socketIO.on('connection', (socket) => {
+      try {
+        console.log('an user connected');
+        let token = socket.handshake.query.jwt;
+        let decoded: any = jwt.verify(token, this._jwtSecret);
+
+        socket.join('notifications-' + decoded._id);
+      } catch (error) {
+        console.log('user connection rejected');
+        socket.disconnect();
+      }
     });
-
-    setInterval(() => {
-      let notification = Notification.create<IGenericDataType>({
-        forUserId: new ObjectID(),
-        type: NotificationType.generic,
-        data: {
-          message: 'test notification'
-        }
-      });
-
-      this.sendNotification(notification);
-    }, 10000);
   }
 
   /**
@@ -56,6 +61,46 @@ export class NotificationService implements IService {
       data: {
         message: message
       }
+    });
+
+    // save notification to DB
+    await this._notificationsRepo.insertOne(notification);
+
+    return notification;
+  }
+
+  /**
+   * Create notification for a friend request.
+   */
+  async createFriendRequestNotification (
+    forUserId: ObjectID,
+    data: IFriendRequestDataType
+  ) : Promise<INotification<any>> {
+    // create new friend request notification instance
+    let notification = Notification.create<IFriendRequestDataType>({
+      forUserId: forUserId,
+      type: NotificationType.friendRequest,
+      data
+    });
+
+    // save notification to DB
+    await this._notificationsRepo.insertOne(notification);
+
+    return notification;
+  }
+
+  /**
+   * Create notification for a friend request response.
+   */
+  async createFriendRequestResponseNotification (
+    forUserId: ObjectID,
+    data: IFriendRequestResponseDataType
+  ) : Promise<INotification<any>> {
+    // create new friend request notification instance
+    let notification = Notification.create<IFriendRequestResponseDataType>({
+      forUserId: forUserId,
+      type: NotificationType.friendRequestResponse,
+      data
     });
 
     // save notification to DB
@@ -107,6 +152,6 @@ export class NotificationService implements IService {
   }
 
   sendNotification (notification: INotification<any>) {
-    this._socketIO.emit('notification', JSON.stringify(notification));
+    this._socketIO.to('notifications-' + notification.userId).emit('notification', JSON.stringify(notification));
   }
 }

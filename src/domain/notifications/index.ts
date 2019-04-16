@@ -4,14 +4,14 @@ import {Server} from 'socket.io';
 import {NotificationService} from './service';
 
 export function get (
-  db: Db, io: Server
+  db: Db, io: Server, jwtSecret: string
 ) : NotificationService {
 
   // fetch collections
   let notificationsCollection = db.collection('notifications');
 
   let service = new NotificationService(
-    notificationsCollection, io
+    notificationsCollection, io, jwtSecret
   );
 
   return service;

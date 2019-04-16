@@ -1,7 +1,7 @@
 import { ObjectID } from 'mongodb';
 
 export enum NotificationType {
-  generic
+  generic, friendRequest, friendRequestResponse
 }
 
 export interface INotification<DataType> {
@@ -15,4 +15,12 @@ export interface INotification<DataType> {
 
 export interface IGenericDataType {
   message: string
+}
+
+export interface IFriendRequestDataType {
+  fromUserId: ObjectID
+}
+
+export interface IFriendRequestResponseDataType {
+  accepted: boolean
 }
