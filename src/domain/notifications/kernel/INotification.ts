@@ -22,5 +22,5 @@ export interface IFriendRequestDataType {
 }
 
 export interface IFriendRequestResponseDataType {
-  accepted: boolean
+  responseId: ObjectID
 }

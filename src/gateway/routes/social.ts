@@ -57,11 +57,13 @@ export function get (
       );
 
       // send response notification to requesting user
-      let friendRequest = await social.getFriendRequest(friendRequestId);
-      let notification = await notifications.createFriendRequestResponseNotification(
-        friendRequest.fromId, {accepted}
-      );
-      await notifications.sendNotification(notification);
+      if (accepted) {
+        let friendRequest = await social.getFriendRequest(friendRequestId);
+        let notification = await notifications.createFriendRequestResponseNotification(
+          friendRequest.fromId, {responseId: friendRequest.toId}
+        );
+        await notifications.sendNotification(notification);
+      }
 
       res.end();
     } catch (err) {
