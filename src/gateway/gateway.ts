@@ -12,6 +12,7 @@ import {ServiceRegistry} from '../application/serviceRegistry';
 // routes
 import {get as UserRoutes} from './routes/users';
 import {get as NotificationRoutes} from './routes/notifications';
+import {get as SocialRoutes} from './routes/social';
 const EXCEPTIONAL = context('default');
 
 /**
@@ -39,6 +40,7 @@ export class ApiGateway {
     let apiRouter = express.Router();
     apiRouter.use(UserRoutes(registry, jwtSecret));
     apiRouter.use(NotificationRoutes(registry, jwtSecret));
+    apiRouter.use(SocialRoutes(registry, jwtSecret));
 
     this.router.use(`/api/${apiVersion}`, apiRouter);
 

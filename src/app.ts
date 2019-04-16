@@ -10,6 +10,7 @@ import {Logger} from './util/process/logger';
 import {ServiceRegistry} from './application/serviceRegistry';
 import {get as UserServiceFactory} from './domain/users';
 import {get as NotificationServiceFactory} from './domain/notifications';
+import {get as SocialServiceFactory} from './domain/social';
 
 // gateway
 import {get as ApiGatewayFactory, ApiGateway} from './gateway';
@@ -56,9 +57,10 @@ export class CommunityAPI {
     );
 
     // init services
-    let dbName = this._mongoClient.db(nconf.get('db:name'));
-    await this._initUsers(dbName);
-    await this._initNotifications(dbName, this._io);
+    let db = this._mongoClient.db(nconf.get('db:name'));
+    await this._initUsers(db);
+    await this._initNotifications(db, this._io);
+    await this._initSocial(db);
 
     // init api gateway
     await this._initGateway();
@@ -80,20 +82,30 @@ export class CommunityAPI {
    * Initialize the user service.
    */
   private async _initUsers (db: Db) {
-    let userService = UserServiceFactory(
+    let service = UserServiceFactory(
       db, this._mailer, nconf.get('hostname'), nconf.get('users:jwtSecret')
     );
-    this.serviceRegistry.add(userService);
+    this.serviceRegistry.add(service);
   }
 
   /**
    * Initialize the notifications service.
    */
   private async _initNotifications (db: Db, io: socketIO.Server) {
-    let userService = NotificationServiceFactory(
+    let service = NotificationServiceFactory(
       db, io
     );
-    this.serviceRegistry.add(userService);
+    this.serviceRegistry.add(service);
+  }
+
+  /**
+   * Initialize the social service.
+   */
+  private async _initSocial (db: Db) {
+    let service = SocialServiceFactory(
+      db
+    );
+    this.serviceRegistry.add(service);
   }
 
   /**
