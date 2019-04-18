@@ -7,6 +7,7 @@ import {sanitize, sanitizeQ} from '../middleware/sanitize';
 import {ServiceRegistry} from '../../application/serviceRegistry';
 import {USER_SERVICE_COMPONENT, UserService} from '../../domain/users/service';
 import {NOTIFICATIONS_SERVICE_COMPONENT, NotificationService} from '../../domain/notifications/service';
+import {SOCIAL_SERVICE_COMPONENT, SocialService} from '../../domain/social/service';
 
 export function get (
   registry: ServiceRegistry,
@@ -16,6 +17,7 @@ export function get (
 
   let users = registry.get(USER_SERVICE_COMPONENT) as UserService;
   let notifications = registry.get(NOTIFICATIONS_SERVICE_COMPONENT) as NotificationService;
+  let social = registry.get(SOCIAL_SERVICE_COMPONENT) as SocialService;
 
   router.post('/users/register', sanitize(new Schema({
     email: Schema.Types.String,
@@ -28,12 +30,13 @@ export function get (
     next: express.NextFunction
   ) => {
     try {
-      await users.registerAccount({
+      let user = await users.registerAccount({
         email: req.body.email,
         password: req.body.password,
         firstname: req.body.firstname,
         lastname: req.body.lastname
       });
+      await social.registerUserFriendList(user._id);
       res.end();
     } catch (err) {
       next(err);

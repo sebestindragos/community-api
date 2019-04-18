@@ -43,7 +43,7 @@ export class UserService implements IService {
     password: string,
     firstname: string,
     lastname: string
-  }) : Promise<void> {
+  }) : Promise<IUser> {
     // check if email is already used
     let found = await this._usersRepo.findOne({
       email: params.email
@@ -81,6 +81,8 @@ export class UserService implements IService {
       'Account confirmation',
       `${this._hostname}api/v1.0/users/confirm?code=${code._id}`
     );
+
+    return newAccount;
   }
 
   /**

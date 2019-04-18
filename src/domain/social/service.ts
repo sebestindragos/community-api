@@ -81,21 +81,17 @@ export class SocialService implements IService {
       this._friendListsRepo.updateOne({
         userId: friendRequest.fromId
       }, {
-        $push: {
+        $addToSet: {
           friendIds: friendRequest.toId
         }
-      }, {
-        upsert: true
       });
 
       this._friendListsRepo.updateOne({
         userId: friendRequest.toId
       }, {
-        $push: {
+        $addToSet: {
           friendIds: friendRequest.fromId
         }
-      }, {
-        upsert: true
       });
     }
 
@@ -126,6 +122,18 @@ export class SocialService implements IService {
   }
 
   /**
+   * Create a new friend list for a user.
+   * Should only be used when registering a new user account.
+   */
+  async registerUserFriendList (userId: ObjectID) {
+    await this._friendListsRepo.insertOne({
+      _id: new ObjectID(),
+      userId,
+      friendIds: []
+    });
+  }
+
+  /**
    * Fetch the friends list for a user.
    */
   async getUserFriendList(userId: ObjectID) : Promise<IUserFriendsList> {
@@ -133,13 +141,13 @@ export class SocialService implements IService {
       userId
     });
 
-    if (found) return found;
+    if (!found) {
+      throw EXCEPTIONAL.GenericException(0, {
+        message: 'Something really bad happened on our side.'
+      });
+    }
 
-    return {
-      _id: new ObjectID(),
-      userId,
-      friendIds: []
-    };
+    return found;
   }
 
   /**
@@ -167,10 +175,7 @@ export class SocialService implements IService {
    */
   async getWallFeed(userId: ObjectID) : Promise<IWallPost[]> {
     // get user fiend list
-    let friendList = await this._friendListsRepo.findOne({
-      userId
-    });
-    if (!friendList) return [];
+    let friendList = await this.getUserFriendList(userId);
 
     let filterByOwners = friendList.friendIds;
     filterByOwners.push(userId);
