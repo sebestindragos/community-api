@@ -87,5 +87,39 @@ export function get (
     }
   });
 
+  router.post('/social/wall-post', isAuthorized(jwtSecret), sanitize(new Schema({
+    text: Schema.Types.String
+  })), async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      let userId = (req as any).user._id;
+      let wallPost = await social.createWallPost(
+        userId, {
+          text: req.body.text
+        }
+      );
+      res.json({wallPost});
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  router.get('/social/wall-post', isAuthorized(jwtSecret), async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      let userId = (req as any).user._id;
+      let wallPosts = await social.getWallFeed(userId);
+      res.json({wallPosts});
+    } catch (err) {
+      next(err);
+    }
+  });
+
   return router;
 }

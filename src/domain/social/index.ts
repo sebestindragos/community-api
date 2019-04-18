@@ -9,9 +9,10 @@ export function get (
   // fetch collections
   let friendListsCollection = db.collection('friend-lists');
   let friendRequestsCollection = db.collection('friend-requests');
+  let wallPostsCollection = db.collection('wall-posts');
 
   let service = new SocialService(
-    friendListsCollection, friendRequestsCollection
+    friendListsCollection, friendRequestsCollection, wallPostsCollection
   );
 
   return service;

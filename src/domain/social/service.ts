@@ -4,6 +4,7 @@ import {context} from 'exceptional.js';
 import {IService} from '../../application/IService';
 import { IUserFriendsList } from './kernel/IUserFriendsList';
 import { IFriendRequest, FriendRequestStatus } from './kernel/IFriendRequest';
+import { IWallPost } from './kernel/IWallPost';
 
 export const SOCIAL_SERVICE_COMPONENT = 'community:social';
 const EXCEPTIONAL = context('default');
@@ -22,6 +23,7 @@ export class SocialService implements IService {
   constructor (
     private _friendListsRepo: Collection<IUserFriendsList>,
     private _friendRequestsRepo: Collection<IFriendRequest>,
+    private _wallPostsRepo: Collection<IWallPost>,
   ) { }
 
   /**
@@ -138,5 +140,43 @@ export class SocialService implements IService {
       userId,
       friendIds: []
     };
+  }
+
+  /**
+   * Create a new wall post.
+   */
+  async createWallPost (
+    ownerId: ObjectID,
+    data: {
+      text: string
+    }
+  ) : Promise<IWallPost> {
+    let newPost: IWallPost = {
+      _id: new ObjectID(),
+      createdAt: new Date(),
+      ownerId: ownerId,
+      data: data
+    };
+
+    await this._wallPostsRepo.insertOne(newPost);
+    return newPost;
+  }
+
+  /**
+   * Get user wall post feed.
+   */
+  async getWallFeed(userId: ObjectID) : Promise<IWallPost[]> {
+    // get user fiend list
+    let friendList = await this._friendListsRepo.findOne({
+      userId
+    });
+    if (!friendList) return [];
+
+    let filterByOwners = friendList.friendIds;
+    filterByOwners.push(userId);
+
+    return this._wallPostsRepo.find({
+      ownerId: {$in: filterByOwners}
+    }).sort({_id: -1}).toArray();
   }
 }
