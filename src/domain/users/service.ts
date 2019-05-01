@@ -26,10 +26,13 @@ export class UserService implements IService {
   constructor (
     private _mailer: Mailer,
     private _hostname: string,
+    private _clientHostname: string,
     private _jwtSecret: string,
     private _usersRepo: Collection<IUser>,
     private _randomCodesRepo: Collection<IRandomCode>,
-  ) { }
+  ) {
+    this._hostname;
+  }
 
   /**
    * IService interface methods.
@@ -79,7 +82,7 @@ export class UserService implements IService {
     await this._mailer.send(
       newAccount.email,
       'Account confirmation',
-      `${this._hostname}api/v1.0/users/confirm?code=${code._id}`
+      `${this._clientHostname}confirm?code=${code._id}`
     );
 
     return newAccount;

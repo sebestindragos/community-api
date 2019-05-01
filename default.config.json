@@ -22,6 +22,10 @@
     "version": "1.0.0"
   },
 
+  "client": {
+    "hostname": "http://localhost:8081/"
+  },
+
   "users": {
     "jwtSecret": "super-secret-string"
   }

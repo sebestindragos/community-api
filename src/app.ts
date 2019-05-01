@@ -83,7 +83,10 @@ export class CommunityAPI {
    */
   private async _initUsers (db: Db) {
     let service = UserServiceFactory(
-      db, this._mailer, nconf.get('hostname'), nconf.get('users:jwtSecret')
+      db, this._mailer,
+      nconf.get('hostname'),
+      nconf.get('client:hostname'),
+      nconf.get('users:jwtSecret')
     );
     this.serviceRegistry.add(service);
   }

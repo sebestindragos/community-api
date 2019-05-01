@@ -4,7 +4,7 @@ import {UserService} from './service';
 import { Mailer } from '../mailer';
 
 export function get (
-  usersDb: Db, mailer: Mailer, hostname: string, jwtSecret: string
+  usersDb: Db, mailer: Mailer, hostname: string, clientHostname: string, jwtSecret: string
 ) : UserService {
 
   // fetch collections
@@ -17,7 +17,7 @@ export function get (
   }, {unique: true});
 
   let service = new UserService(
-    mailer, hostname, jwtSecret, usersCollection, randomCodesCollection
+    mailer, hostname, clientHostname, jwtSecret, usersCollection, randomCodesCollection
   );
 
   return service;
