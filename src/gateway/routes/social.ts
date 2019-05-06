@@ -7,6 +7,7 @@ import {sanitize} from '../middleware/sanitize';
 import {ServiceRegistry} from '../../application/serviceRegistry';
 import {SOCIAL_SERVICE_COMPONENT, SocialService} from '../../domain/social/service';
 import {NOTIFICATIONS_SERVICE_COMPONENT, NotificationService} from '../../domain/notifications/service';
+import { UserService, USER_SERVICE_COMPONENT } from '../../domain/users/service';
 
 export function get (
   registry: ServiceRegistry,
@@ -16,6 +17,7 @@ export function get (
 
   let social = registry.get(SOCIAL_SERVICE_COMPONENT) as SocialService;
   let notifications = registry.get(NOTIFICATIONS_SERVICE_COMPONENT) as NotificationService;
+  let users = registry.get(USER_SERVICE_COMPONENT) as UserService;
 
   router.post('/social/friend-request', isAuthorized(jwtSecret), sanitize(new Schema({
     friendId: Schema.Types.String
@@ -30,9 +32,14 @@ export function get (
         fromUserId: userId,
         toUserId: new ObjectID(req.body.friendId)
       });
+      const fromUser = await users.getUserById(request.fromId);
 
       let notification = await notifications.createFriendRequestNotification(
-        request.toId, {fromUserId: request.fromId}
+        request.toId, {fromUser: {
+          _id: fromUser._id,
+          firstname: fromUser.profile.firstname,
+          lastname: fromUser.profile.lastname
+        }}
       );
       await notifications.sendNotification(notification);
 
@@ -59,8 +66,13 @@ export function get (
       // send response notification to requesting user
       if (accepted) {
         let friendRequest = await social.getFriendRequest(friendRequestId);
+        let respondingUser = await users.getUserById(friendRequest.toId);
         let notification = await notifications.createFriendRequestResponseNotification(
-          friendRequest.fromId, {responseId: friendRequest.toId}
+          friendRequest.fromId, {responder: {
+            _id: respondingUser._id,
+            firstname: respondingUser.profile.firstname,
+            lastname: respondingUser.profile.lastname
+          }}
         );
         await notifications.sendNotification(notification);
       }

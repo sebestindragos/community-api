@@ -48,5 +48,19 @@ export function get (
     }
   });
 
+  router.get('/notifications/unseen-count', isAuthorized(jwtSecret), async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      let userId = (req as any).user._id;
+      let unseenCount = await notifications.getUnseenCount(userId);
+      res.json({value: unseenCount});
+    } catch (err) {
+      next(err);
+    }
+  });
+
   return router;
 }

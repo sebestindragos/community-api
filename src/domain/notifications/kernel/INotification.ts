@@ -18,9 +18,17 @@ export interface IGenericDataType {
 }
 
 export interface IFriendRequestDataType {
-  fromUserId: ObjectID
+  fromUser: {
+    _id: ObjectID,
+    firstname: string,
+    lastname: string
+  }
 }
 
 export interface IFriendRequestResponseDataType {
-  responseId: ObjectID
+  responder: {
+    _id: ObjectID,
+    firstname: string,
+    lastname: string
+  }
 }

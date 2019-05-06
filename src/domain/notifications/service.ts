@@ -115,7 +115,7 @@ export class NotificationService implements IService {
   async listUserNotifications (userId: ObjectID) : Promise<Array<INotification<any>>> {
     let userNotifications = await this._notificationsRepo.find({
       userId: userId
-    }).toArray();
+    }).sort({_id: -1}).toArray();
 
     return userNotifications;
   }
@@ -153,5 +153,12 @@ export class NotificationService implements IService {
 
   sendNotification (notification: INotification<any>) {
     this._socketIO.to('notifications-' + notification.userId).emit('notification', JSON.stringify(notification));
+  }
+
+  /**
+   * Get number of unread notifications for a user.
+   */
+  getUnseenCount (userId: ObjectID) : Promise<number> {
+    return this._notificationsRepo.find({userId, seen: false}).count();
   }
 }
