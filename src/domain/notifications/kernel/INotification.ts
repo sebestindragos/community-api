@@ -22,7 +22,8 @@ export interface IFriendRequestDataType {
     _id: ObjectID,
     firstname: string,
     lastname: string
-  }
+  },
+  requestId: ObjectID
 }
 
 export interface IFriendRequestResponseDataType {

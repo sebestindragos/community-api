@@ -151,6 +151,23 @@ export class SocialService implements IService {
   }
 
   /**
+   * Remove user friend.
+   */
+  async removeUserFriend (userId: ObjectID, friendId: ObjectID) {
+    let found = await this._friendListsRepo.findOne({
+      userId
+    });
+
+    if (!found) {
+      throw EXCEPTIONAL.GenericException(0, {
+        message: 'Something really bad happened on our side.'
+      });
+    }
+
+    await this._friendListsRepo.updateOne({userId}, {$pull: {friendIds: friendId}});
+  }
+
+  /**
    * Create a new wall post.
    */
   async createWallPost (

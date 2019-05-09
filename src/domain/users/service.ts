@@ -170,4 +170,13 @@ export class UserService implements IService {
 
     return user;
   }
+
+  /**
+   * Search users.
+   */
+  async search (term: string) :  Promise<IUser[]> {
+    if (!term) return [];
+
+    return this._usersRepo.find({$text: {$search: term}}).toArray();
+  }
 }

@@ -15,6 +15,10 @@ export function get (
   usersCollection.createIndex({
     email: 1
   }, {unique: true});
+  usersCollection.createIndex({
+    'profile.firstname': 'text',
+    'profile.lastname': 'text'
+  }, {unique: true});
 
   let service = new UserService(
     mailer, hostname, clientHostname, jwtSecret, usersCollection, randomCodesCollection

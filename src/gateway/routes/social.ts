@@ -39,7 +39,7 @@ export function get (
           _id: fromUser._id,
           firstname: fromUser.profile.firstname,
           lastname: fromUser.profile.lastname
-        }}
+        }, requestId: request._id}
       );
       await notifications.sendNotification(notification);
 
@@ -94,6 +94,22 @@ export function get (
       let userId = (req as any).user._id;
       let friendsList = await social.getUserFriendList(userId);
       res.json({friendsList});
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  router.delete('/social/friends/:id', isAuthorized(jwtSecret), async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      let userId = (req as any).user._id;
+      let friendId = new ObjectID(req.params.id);
+      await social.removeUserFriend(userId, friendId);
+      await social.removeUserFriend(friendId, userId);
+      res.end();
     } catch (err) {
       next(err);
     }

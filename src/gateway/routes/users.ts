@@ -105,5 +105,40 @@ export function get (
     }
   });
 
+  router.get('/users', isAuthorized(jwtSecret), sanitizeQ(new Schema({
+    q: Schema.Types.String
+  })), async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      // let userId = (req as any).user._id;
+      let term = req.query.q;
+      let found = await users.search(term);
+      res.json({
+        value: found
+      });
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  router.get('/users/:id', isAuthorized(jwtSecret), async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      let userId = new ObjectID(req.params.id);
+      let found = await users.getUserById(userId);
+      res.json({
+        value: found
+      });
+    } catch (err) {
+      next(err);
+    }
+  });
+
   return router;
 }
