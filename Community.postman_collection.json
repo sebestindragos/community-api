@@ -1,0 +1,301 @@
+{
+	"info": {
+		"_postman_id": "eced2ff3-2ce6-4ecb-980a-016d3b5965c8",
+		"name": "Community",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"sebestin.dragos+01@gmail.com\",\n\t\"password\": \"123qwe\",\n\t\"firstname\": \"John\",\n\t\"lastname\": \"Doe\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1.0/users/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1.0",
+						"users",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"sebestin.dragos+01@gmail.com\",\n\t\"password\": \"123qwe\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1.0/users/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1.0",
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create friend request",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2M5Nzg1MDNiNzZkMzM1ODQ0MTIzMTciLCJpYXQiOjE1NTcxNDg0NzYsImV4cCI6MTU1OTc0MDQ3Nn0.V217ZdFi0G02j2Afu8tAMC2HjL17S6vn7LJpNUo7Z3g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"friendId\": \"5cc978503b76d33584412317\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1.0/social/friend-request",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1.0",
+						"social",
+						"friend-request"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get friends list",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2I1OWU2MjdmOTNmZjBiYzBjYjU1ZWYiLCJpYXQiOjE1NTU0MDY1MjgsImV4cCI6MTU1Nzk5ODUyOH0.SguMcgE5DS-gOQyZLHw3y3onbEqr7lSFX1Eo-xFSvkI",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1.0/social/friends",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1.0",
+						"social",
+						"friends"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "respond to friend request",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2M5Nzg1MDNiNzZkMzM1ODQ0MTIzMTciLCJpYXQiOjE1NTcxNDg0NzYsImV4cCI6MTU1OTc0MDQ3Nn0.V217ZdFi0G02j2Afu8tAMC2HjL17S6vn7LJpNUo7Z3g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"status\": 1\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1.0/social/friend-request/5cd025075fe8fe34d8ba07cd/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1.0",
+						"social",
+						"friend-request",
+						"5cd025075fe8fe34d8ba07cd",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get notifications",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2I1OWU2MjdmOTNmZjBiYzBjYjU1ZWYiLCJpYXQiOjE1NTU0MDY1MjgsImV4cCI6MTU1Nzk5ODUyOH0.SguMcgE5DS-gOQyZLHw3y3onbEqr7lSFX1Eo-xFSvkI",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1.0/notifications",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1.0",
+						"notifications"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create wall post",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2I4MmRkZTJlYWQxZjZlNWY3YzI4ODgiLCJpYXQiOjE1NTU2MDgzNzUsImV4cCI6MTU1ODIwMDM3NX0.Qh_J2aklIOefTopK7Q35NzgxlcWaeEqeZ8CHtjBDRVo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"text\": \"second account\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1.0/social/wall-post",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1.0",
+						"social",
+						"wall-post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get wall feed",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2I4MmRkZTJlYWQxZjZlNWY3YzI4ODgiLCJpYXQiOjE1NTU2MDgzNzUsImV4cCI6MTU1ODIwMDM3NX0.Qh_J2aklIOefTopK7Q35NzgxlcWaeEqeZ8CHtjBDRVo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1.0/social/wall-post",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1.0",
+						"social",
+						"wall-post"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
