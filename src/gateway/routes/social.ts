@@ -142,7 +142,37 @@ export function get (
   ) => {
     try {
       let userId = (req as any).user._id;
-      let wallPosts = await social.getWallFeed(userId);
+
+      let fromId = undefined;
+      if (req.query.fromId)
+        fromId = new ObjectID(req.query.fromId);
+      let limit = undefined;
+      if (req.query.limit)
+        limit = parseInt(req.query.limit);
+
+      let wallPosts = await social.getWallFeed(userId, fromId, limit);
+      res.json({wallPosts});
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  router.get('/social/user/:id/wall-post', isAuthorized(jwtSecret), async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      let userId = new ObjectID(req.params.id);
+
+      let fromId = undefined;
+      if (req.query.fromId)
+        fromId = new ObjectID(req.query.fromId);
+      let limit = undefined;
+      if (req.query.limit)
+        limit = parseInt(req.query.limit);
+
+      let wallPosts = await social.getWallFeed(userId, fromId, limit);
       res.json({wallPosts});
     } catch (err) {
       next(err);

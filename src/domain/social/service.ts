@@ -190,15 +190,34 @@ export class SocialService implements IService {
   /**
    * Get user wall post feed.
    */
-  async getWallFeed(userId: ObjectID) : Promise<IWallPost[]> {
+  async getWallFeed(userId: ObjectID, fromId?: ObjectID, limit?: number) : Promise<IWallPost[]> {
     // get user fiend list
     let friendList = await this.getUserFriendList(userId);
 
     let filterByOwners = friendList.friendIds;
     filterByOwners.push(userId);
 
-    return this._wallPostsRepo.find({
+    let q: any = {
       ownerId: {$in: filterByOwners}
-    }).sort({_id: -1}).toArray();
+    };
+
+    if (fromId) {
+      q._id = {$lt: fromId};
+    }
+    return this._wallPostsRepo.find(q).sort({_id: -1}).limit(limit || 10).toArray();
+  }
+
+  /**
+   * Get user wall posts.
+   */
+  async getUserWallPosts (userId: ObjectID, fromId?: ObjectID, limit?: number) : Promise<IWallPost[]> {
+    let q: any = {
+      ownerId: userId
+    };
+
+    if (fromId) {
+      q._id = {$lt: fromId};
+    }
+    return this._wallPostsRepo.find(q).sort({_id: -1}).limit(limit || 10).toArray();
   }
 }
