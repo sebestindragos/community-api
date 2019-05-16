@@ -172,7 +172,7 @@ export function get (
       if (req.query.limit)
         limit = parseInt(req.query.limit);
 
-      let wallPosts = await social.getWallFeed(userId, fromId, limit);
+      let wallPosts = await social.getUserWallPosts(userId, fromId, limit);
       res.json({wallPosts});
     } catch (err) {
       next(err);
